@@ -290,9 +290,11 @@ package() {
     local tgt
     local booter
     local booter_blockio
+    local fat_driver
     tgt="$(basename "$(pwd)")"
     booter="$(pwd)/../../OpenDuetPkg/${tgt}/${arch}/boot"
     booter_blockio="$(pwd)/../../OpenDuetPkg/${tgt}/${arch}/boot-blockio"
+    fat_driver="$(pwd)/../../OpenDuetPkg/${tgt}/${arch}/Fat.efi"
 
     if [ -f "${booter}" ]; then
       echo "Copying OpenDuetPkg boot file from ${booter}..."
@@ -305,6 +307,12 @@ package() {
       cp "${booter_blockio}" "${dstdir}/Utilities/LegacyBoot/boot${arch}-blockio" || exit 1
     else
       echo "Failed to find OpenDuetPkg BlockIO at ${booter_blockio}!"
+    fi
+    if [ -f "${fat_driver}" ]; then
+      echo "Copying EnhancedFatDxe driver file from ${fat_driver}..."
+      cp "${fat_driver}" "${dstdir}/${arch}/EFI/OC/Drivers"/ || exit 1
+    else
+      echo "Failed to find EnhancedFatDxe at ${fat_driver}!"
     fi
   done
 
