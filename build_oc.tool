@@ -357,9 +357,12 @@ package() {
     cp "${selfdir}/UDK/BaseTools/Bin/Win32/EfiRom.exe" "${dstdir}/Utilities/BaseTools" || exit 1
     cp "${selfdir}/UDK/BaseTools/Bin/Win32/GenFfs.exe" "${dstdir}/Utilities/BaseTools" || exit 1
     cp "${selfdir}/UDK/BaseTools/Bin/Win32/GenSec.exe" "${dstdir}/Utilities/BaseTools" || exit 1
+    cp "${selfdir}/UDK/BaseTools/Bin/Win32/LzmaCompress.exe" "${dstdir}/Utilities/BaseTools" || exit 1
   else
     cp "${selfdir}/UDK/BaseTools/Source/C/bin/EfiRom" "${dstdir}/Utilities/BaseTools" || exit 1
     cp "${selfdir}/UDK/BaseTools/Source/C/bin/GenFfs" "${dstdir}/Utilities/BaseTools" || exit 1
+    cp "${selfdir}/UDK/BaseTools/Source/C/bin/GenSec" "${dstdir}/Utilities/BaseTools" || exit 1
+    cp "${selfdir}/UDK/BaseTools/Source/C/bin/LzmaCompress" "${dstdir}/Utilities/BaseTools" || exit 1
   fi
 
   utils=(
