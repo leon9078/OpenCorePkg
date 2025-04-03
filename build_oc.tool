@@ -393,7 +393,11 @@ package() {
   cp "${selfdir}/Utilities/ocvalidate/README.md" "${dstdir}/Utilities/ocvalidate"/ || exit 1
 
   pushd "${dstdir}" || exit 1
-  zip -qr -FS ../"OpenCore-${ver}-${2}.zip" ./* || exit 1
+  if [ "$(unamer)" = "Windows" ]; then
+    zip -qr -FS ../"OpenCore-${ver}-${2}-Windows.zip" ./* || exit 1
+  else
+    zip -qr -FS ../"OpenCore-${ver}-${2}.zip" ./* || exit 1
+  fi
   popd || exit 1
   rm -rf "${dstdir}" || exit 1
 
