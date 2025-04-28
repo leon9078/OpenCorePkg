@@ -290,9 +290,11 @@ package() {
     local tgt
     local booter
     local booter_blockio
+    local fat_driver
     tgt="$(basename "$(pwd)")"
     booter="$(pwd)/../../OpenDuetPkg/${tgt}/${arch}/boot"
     booter_blockio="$(pwd)/../../OpenDuetPkg/${tgt}/${arch}/boot-blockio"
+    fat_driver="$(pwd)/../../OpenDuetPkg/${tgt}/${arch}/Fat.efi"
 
     if [ -f "${booter}" ]; then
       echo "Copying OpenDuetPkg boot file from ${booter}..."
@@ -305,6 +307,12 @@ package() {
       cp "${booter_blockio}" "${dstdir}/Utilities/LegacyBoot/boot${arch}-blockio" || exit 1
     else
       echo "Failed to find OpenDuetPkg BlockIO at ${booter_blockio}!"
+    fi
+    if [ -f "${fat_driver}" ]; then
+      echo "Copying EnhancedFatDxe driver file from ${fat_driver}..."
+      cp "${fat_driver}" "${dstdir}/${arch}/EFI/OC/Drivers"/ || exit 1
+    else
+      echo "Failed to find EnhancedFatDxe at ${fat_driver}!"
     fi
   done
 
@@ -348,9 +356,13 @@ package() {
   if [ "$(unamer)" = "Windows" ]; then
     cp "${selfdir}/UDK/BaseTools/Bin/Win32/EfiRom.exe" "${dstdir}/Utilities/BaseTools" || exit 1
     cp "${selfdir}/UDK/BaseTools/Bin/Win32/GenFfs.exe" "${dstdir}/Utilities/BaseTools" || exit 1
+    cp "${selfdir}/UDK/BaseTools/Bin/Win32/GenSec.exe" "${dstdir}/Utilities/BaseTools" || exit 1
+    cp "${selfdir}/UDK/BaseTools/Bin/Win32/LzmaCompress.exe" "${dstdir}/Utilities/BaseTools" || exit 1
   else
     cp "${selfdir}/UDK/BaseTools/Source/C/bin/EfiRom" "${dstdir}/Utilities/BaseTools" || exit 1
     cp "${selfdir}/UDK/BaseTools/Source/C/bin/GenFfs" "${dstdir}/Utilities/BaseTools" || exit 1
+    cp "${selfdir}/UDK/BaseTools/Source/C/bin/GenSec" "${dstdir}/Utilities/BaseTools" || exit 1
+    cp "${selfdir}/UDK/BaseTools/Source/C/bin/LzmaCompress" "${dstdir}/Utilities/BaseTools" || exit 1
   fi
 
   utils=(
@@ -381,7 +393,11 @@ package() {
   cp "${selfdir}/Utilities/ocvalidate/README.md" "${dstdir}/Utilities/ocvalidate"/ || exit 1
 
   pushd "${dstdir}" || exit 1
-  zip -qr -FS ../"OpenCore-${ver}-${2}.zip" ./* || exit 1
+  if [ "$(unamer)" = "Darwin" ] || [ "$(unamer)" = "Windows" ]; then
+    zip -qr -FS ../"OpenCore-${ver}-$(unamer)-${TOOLCHAINS[0]}-${2}.zip" ./* || exit 1
+  else
+    zip -qr -FS ../"OpenCore-${ver}-${2}.zip" ./* || exit 1
+  fi
   popd || exit 1
   rm -rf "${dstdir}" || exit 1
 
@@ -402,7 +418,7 @@ export SELFPKG
 export NO_ARCHIVES
 export DISCARD_SUBMODULES
 
-src=$(curl -LfsS https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh) && eval "$src" || exit 1
+src=$(curl -LfsS https://raw.githubusercontent.com/leon9078/ocbuild/master/efibuild.sh) && eval "$src" || exit 1
 
 cd Utilities/ocvalidate || exit 1
 ocv_tool=""
