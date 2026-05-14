@@ -1,8 +1,6 @@
 name: Build
 
 on:
-  push:
-  pull_request:
   workflow_dispatch:
   release:
     types: [published]
@@ -45,14 +43,27 @@ jobs:
         with:
           name: macOS XCODE5 Artifacts
           path: Binaries/*.zip
+
+      - name: Create Release body
+        run: |
+          printf "**v%s**\n\n" ${GITHUB_REF/refs\/tags\//} > body.txt
+          printf "* %s\n" "OcAppleSecureBootLib: Set AppleSecureBootPolicy UEFI variable only if SecureBootModel is not disabled" >> body.txt
+          printf "* %s\n" "OpenLinuxBoot: add trailing space between initrd section and other Linux kernel cmdline options if there is at least one kernel option specificed with autoopts" >> body.txt
+          printf "* %s\n" "Modify CrScreenshotDxe in order to be embedded in my UEFI firmware" >> body.txt
+          printf "* %s\n" "Modify OpenUsbKbDxe by increasing USBKBD_REPEAT_RATE in order to match my UHCD AMI USB Driver" >> body.txt
+          printf "* %s\n" "Include EnhancedFatDxe in OpenCorePkg in order to replace bugged AMI FileSystem.efi on my APTIO IV firmware" >> body.txt
+          printf "* %s\n" "Modify EnhancedFatDxe by removing FAT32's FsVersion check during driver initialization" >> body.txt
+          printf "* %s\n" "Include GenSec, LzmaCompress and TianoCompress BaseTools in order to help in the creation of UEFI modules" >> body.txt
+          printf "* %s\n" "Add unamer and toolchain name to macOS and Windows Binaries" >> body.txt
+          printf "* %s\n" "Add Windows builds to Release" >> body.txt
+
       - name: Upload to Release
         if: github.event_name == 'release'
-        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # v2.9.0
+        uses: softprops/action-gh-release@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Binaries/*.zip
-          tag: ${{ github.ref }}
-          file_glob: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body_path: ./body.txt
+          files: Binaries/*.zip
 
   build-linux-clangpdb:
     name: Linux CLANGPDB
@@ -181,3 +192,10 @@ jobs:
         with:
           name: Windows Artifacts
           path: Binaries/*.zip
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: Binaries/*.zip

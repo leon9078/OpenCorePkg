@@ -950,14 +950,17 @@ OcAppleSecureBootInstallProtocol (
   mSbWindowsPolicy      = SbWinPolicy;
   mSbWindowsPolicyValid = SbWinPolicyValid;
 
-  DataSize = sizeof (SbPolicy);
-  gRT->SetVariable (
-         L"AppleSecureBootPolicy",
-         &gAppleSecureBootVariableGuid,
-         EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_BOOTSERVICE_ACCESS,
-         DataSize,
-         &SbPolicy
-         );
+  if (SbPolicy != AppleImg4SbModeDisabled) {
+    DataSize = sizeof (SbPolicy);
+    gRT->SetVariable (
+           L"AppleSecureBootPolicy",
+           &gAppleSecureBootVariableGuid,
+           EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_BOOTSERVICE_ACCESS,
+           DataSize,
+           &SbPolicy
+           );
+  }
+
   if (SbWinPolicyValid) {
     DataSize = sizeof (SbWinPolicy);
     gRT->SetVariable (

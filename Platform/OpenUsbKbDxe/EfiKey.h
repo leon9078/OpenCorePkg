@@ -37,9 +37,8 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 
 #define MAX_KEY_ALLOWED  32
 
-#define HZ                   1000 * 1000 * 10
-#define USBKBD_REPEAT_DELAY  ((HZ) / 2)
-#define USBKBD_REPEAT_RATE   ((HZ) / 50)
+#define USBKBD_REPEAT_DELAY  5000000  // 0.5s
+#define USBKBD_REPEAT_RATE   635000   // 0.0635s
 
 #define CLASS_HID          3
 #define SUBCLASS_BOOT      1

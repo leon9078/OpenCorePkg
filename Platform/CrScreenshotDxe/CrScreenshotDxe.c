@@ -161,20 +161,10 @@ TakeScreenshot (
   EFI_STATUS                     Status;
   UINT32                         ScreenWidth;
   UINT32                         ScreenHeight;
-  CHAR16                         FileName[16];
+  CHAR16                         FileName[8+1+3+1];
   EFI_TIME                       Time;
   UINTN                          Index;
   UINT8                          Temp;
-
-  //
-  // This is required to avoid assert (only noticeable on firmware compiled to
-  // assert) from gBS->RaiseTPL(TPL_CALLBACK) within the file system accesses
-  // below. Makes explicit what was happening anyway, which is that we're
-  // effectively lowering the TPL for a long running task, during a keyboard
-  // interrupt.
-  // REF: https://github.com/acidanthera/audk/blob/bcdcc4160d7460c46c08c9395aae81be44ef23a9/FatPkg/EnhancedFatDxe/Misc.c#L399
-  //
-  gBS->RestoreTPL (TPL_CALLBACK);
 
   Status = OcFindWritableOcFileSystem (&Fs);
   if (EFI_ERROR (Status)) {
@@ -221,7 +211,7 @@ TakeScreenshot (
     UnicodeSPrint (
       FileName,
       sizeof (FileName),
-      L"%02d%02d%02d%02d.png",
+      L"%02u%02u%02u%02u.png",
       Time.Day,
       Time.Hour,
       Time.Minute,
@@ -340,10 +330,10 @@ AppleEventKeyHandler (
   }
 
   if (  ((Information->EventType & APPLE_EVENT_TYPE_KEY_DOWN) != 0)
-     && (Information->EventData.KeyData->AppleKeyCode == AppleHidUsbKbUsageKeyF10))
+     && (Information->EventData.KeyData->AppleKeyCode == AppleHidUsbKbUsageKeyF6))
   {
     //
-    // Take a screenshot for F10.
+    // Take a screenshot for F6.
     //
     TakeScreenshot (NULL);
   }
@@ -466,9 +456,9 @@ InstallKeyHandler (
     }
 
     //
-    // Register key notification function for F10.
+    // Register key notification function for F6.
     //
-    SimpleTextInExKeyStroke.Key.ScanCode            = SCAN_F10;
+    SimpleTextInExKeyStroke.Key.ScanCode            = SCAN_F6;
     SimpleTextInExKeyStroke.Key.UnicodeChar         = 0;
     SimpleTextInExKeyStroke.KeyState.KeyShiftState  = 0;
     SimpleTextInExKeyStroke.KeyState.KeyToggleState = 0;

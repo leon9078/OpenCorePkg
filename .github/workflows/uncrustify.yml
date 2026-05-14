@@ -1,8 +1,6 @@
 name: Uncrustify
 
 on:
-  push:
-  pull_request:
   workflow_dispatch:
   release:
     types: [published]

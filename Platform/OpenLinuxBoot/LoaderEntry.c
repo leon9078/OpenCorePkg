@@ -1223,9 +1223,11 @@ DoConvertLoaderEntriesToBootEntries (
         break;
       }
 
-      Status = OcAsciiStringBufferAppend (StringBuffer, " ");
-      if (EFI_ERROR (Status)) {
-        break;
+      if (OptionsIndex < Entry->Options->Count) {
+        Status = OcAsciiStringBufferAppend (StringBuffer, " ");
+        if (EFI_ERROR (Status)) {
+          break;
+        }
       }
     }
 
